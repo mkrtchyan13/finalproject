@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Brick breaker</title>
+  </head>
+  <body>
+    <canvas id="canvas" width=1425 height=800></canvas>
+    <script type="text/javascript">
+
+			const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const backgroundimg = new Image();
+      backgroundimg.src = "https://lh6.ggpht.com/QozLwZp0pT621lBwFL_a-gA4ZA_MohNsy28rLxbo2iESCgC4F6-NNNu3kE_cywoxNA=h900";
+      const pongimg = new Image();
+      pongimg.src = "https://www.labseries.com/_efb/agerescue/kr/www/images/gif/ball-medium.gif";
+      const playerimg = new Image();
+      playerimg.src = "http://res.freestockphotos.biz/pictures/15/15787-illustration-of-a-blank-glossy-rectangular-button-pv.png";
+      const tshnamiimg = new Image();
+      tshnamiimg.src = "https://cdn.pixabay.com/photo/2013/07/12/15/57/button-150642_640.png";
+      const verjimg= new Image();
+      verjimg.src="https://orig00.deviantart.net/5fac/f/2016/027/b/4/80s_retro_game_over_wallpaper_by_leepiin-d9phs9b.png";
+      const winimg= new Image();
+      winimg.src="http://www.theorangeday.com/wp-content/uploads/2014/02/win-screen.png";
+
+
+      const gameData = {
+        player1: {
+          x: canvas.width/2,
+          y: canvas.height-70,
+          width: 160,
+          height: 60,
+          xDelta: 10
+        },
+
+        ball: {
+          x: canvas.width/2-30,
+          y: canvas.height-130,
+          width: 50,
+          height: 50,
+          xDelta: 7,
+          yDelta: 7
+        },
+
+        tshnaminer: [],
+
+        lives:3,
+        gameOver: false
+      };
+      for (let i = 0; i < 4; i++) {
+        for(let j = 0; j <= (canvas.width-10)/160; j++) {
+          gameData.tshnaminer.push({
+            x: 160 * j + 10,
+            y: 60 * i + 10,
+            width: 130,
+            height: 60
+          })
+        }
+      }
+			const Intersection = function(rect1X, rect1Y, rect1W, rect1H, rect2X, rect2Y, rect2W, rect2H) {
+	       return rect1X < rect2X + rect2W && rect1X + rect1W > rect2X && rect1Y < rect2Y + rect2H && rect1H + rect1Y > rect2Y;
+	    };
+      const updateData = function(){
+        const player1 = gameData.player1;
+        const ball = gameData.ball;
+
+        if(ball.x >= canvas.width-60 || ball.x<=0){
+          ball.xDelta = -ball.xDelta;
+        }
+        if (ball.y <= 0 ){
+          ball.yDelta = -ball.yDelta;
+        }
+        ball.x +=  ball.xDelta;
+        ball.y +=  ball.yDelta;
+
+        if(buttons[a] && player1.x > 0) {
+          player1.x -= player1.xDelta
+        }
+        if(buttons[d] && player1.x + player1.width < canvas.width) {
+          player1.x += player1.xDelta
+        }
+
+        if(Intersection(ball.x, ball.y, ball.width, ball.height, gameData.player1.x, gameData.player1.y, gameData.player1.width, gameData.player1.height)){
+						ball.yDelta = -Math.abs(ball.yDelta);
+        }
+
+        for (var i = gameData.tshnaminer.length-1; i >= 0; i--) {
+          if(Intersection(ball.x, ball.y, ball.width, ball.height, gameData.tshnaminer[i].x, gameData.tshnaminer[i].y, gameData.tshnaminer[i].width, gameData.tshnaminer[i].height)){
+                  ball.yDelta = -ball.yDelta;
+                  gameData.tshnaminer.splice(i, 1)
+          }
+        }
+
+        if(ball.y > canvas.height){
+          ball.x = canvas.width/2;
+          ball.y = canvas.height-130;
+          gameData.player1.x=canvas.width/2,
+          gameData.player1.y=canvas.height-70,
+          gameData.lives = gameData.lives-1;
+        }
+        if(gameData.lives < 1){
+          gameData.gameOver = true;
+          ctx.drawImage(verjimg, 0, 0, canvas.width, canvas.height)
+        }
+
+        if(gameData.tshnaminer.length === 0){
+          gameData.gameOver =true;
+          ctx.drawImage(winimg, 0, 0, canvas.width, canvas.height)
+        }
+
+
+      }
+
+
+      const draw = function (){
+
+        ctx.drawImage(backgroundimg, 0, 0, canvas.width, canvas.height);
+
+        const player1 = gameData.player1;
+        ctx.drawImage(playerimg, player1.x, player1.y, player1.width, player1.height);
+
+
+        const ball = gameData.ball;
+        ctx.drawImage(pongimg, ball.x, ball.y, ball.width, ball.height);
+
+        for (let i = 0; i < gameData.tshnaminer.length; i++) {
+          ctx.drawImage(tshnamiimg, gameData.tshnaminer[i].x, gameData.tshnaminer[i].y, gameData.tshnaminer[i].width, gameData.tshnaminer[i].height);
+        }
+
+        ctx.font="35px Times New Roman";
+				ctx.fillStyle="white";
+        const bar = "Lives:";
+        ctx.fillText(bar, 30,45);
+        ctx.fillText(gameData.lives, 125,45)
+      };
+
+
+      const a = 65;
+      const d = 68;
+      const buttons = {};
+
+      document.addEventListener('keydown', function(event) {
+		buttons[event.keyCode] = true;
+      },false);
+
+      document.addEventListener('keyup', function(event) {
+		buttons[event.keyCode] = false;
+      },false);
+
+      const loop = function(){
+
+        draw();
+        updateData();
+        if(!gameData.gameOver) {
+          requestAnimationFrame(loop);
+        }
+      };
+      loop();
+    </script>
+  </body>
+</html>

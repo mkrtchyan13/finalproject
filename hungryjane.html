@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hungry Jane</title>
+  </head>
+  <body>
+    <canvas id="canvas" width=1425 height=800></canvas>
+    <script type="text/javascript">
+
+			const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const backgroundimg = new Image();
+      backgroundimg.src = "https://vignette2.wikia.nocookie.net/spongebobfanon/images/e/e8/1000x1000.jpg/revision/latest?cb=20140621172935";
+
+      const player1img = new Image();
+      player1img.src = "https://scontent.fevn1-2.fna.fbcdn.net/v/t34.0-12/25360757_947625375391436_885063427_n.png?oh=c7aa1a2b9b8cc7dfbcfc0d46ce902584&oe=5A34BEE8";
+
+      const tshnamiimg = new Image();
+      tshnamiimg.src = "http://images4.fanpop.com/image/photos/21600000/Squidward-squidward-spongebob-21620206-198-289.png";
+
+      const tshnami1img = new Image();
+      tshnami1img.src = "https://scontent.fevn1-1.fna.fbcdn.net/v/t34.0-12/25287249_946407552179885_1381641073_n.png?oh=7dba71fa113014778a03c45ade8d9d13&oe=5A315A75";
+
+
+      const burgerimg = new Image();
+      burgerimg.src = "https://vignette.wikia.nocookie.net/spongebob/images/d/d4/Krabby_Patty_transparentpng.png/revision/latest/scale-to-width-down/200?cb=20170310181007";
+
+      const verjimg= new Image();
+      verjimg.src="https://img00.deviantart.net/611f/i/2015/316/3/b/patrick_star___game_over_by_mjeddy-d9gelu7.png";
+
+      const winimg= new Image();
+      winimg.src="https://vignette.wikia.nocookie.net/spongebob/images/4/4c/Bikini_Bottom_Brawlers_Spongebob_you_win_2.png/revision/latest?cb=20140721085613";
+
+      const rand = function(num) {
+         return Math.floor(Math.random() * num) + 1;
+       };
+
+
+      const gameData = {
+        player1: {
+          x: canvas.width/2,
+          y: canvas.height-120,
+          width: 70,
+          height: 100,
+          xDelta: 8,
+          yDelta: 8
+        },
+
+        burger:{
+          x: rand(canvas.width-20),
+          y:30,
+          width: 55,
+          height:50
+        },
+        tshnaminer:[],
+        tshnaminer1: [],
+        passed:0,
+        lives:3,
+        gameOver: false
+      };
+
+      for (let i = 0; i < 2; i++) {
+        for(let j = 0; j <= 2; j++) {
+          gameData.tshnaminer.push({
+            x: 430 * j + 30,
+            y: 350* i + 120,
+            width: 60,
+            height: 100,
+            xDelta: 10
+          })
+        }
+      }
+
+      for (let i = 0; i < 1; i++) {
+        for(let j = 0; j <= 2; j++) {
+          gameData.tshnaminer1.push({
+            x: 430 * j + 30,
+            y: 240* i + 280,
+            width: 60,
+            height: 100,
+            xDelta: 10
+          })
+        }
+      }
+
+			const Intersection = function(rect1X, rect1Y, rect1W, rect1H, rect2X, rect2Y, rect2W, rect2H) {
+	       return rect1X < rect2X + rect2W && rect1X + rect1W > rect2X && rect1Y < rect2Y + rect2H && rect1H + rect1Y > rect2Y;
+	    };
+      const updateData = function(){
+        const player1 = gameData.player1;
+        const tshnaminer = gameData.tshnaminer;
+
+        tshnaminer.x += tshnaminer.xDelta;
+
+
+        if(buttons[leftKey] && player1.x > 0) {
+          player1.x -= player1.xDelta
+        }
+        if(buttons[rightKey] && player1.x + player1.width < canvas.width) {
+          player1.x += player1.xDelta
+        }
+        if(buttons[upKey] && player1.y > 0) {
+          player1.y -= player1.yDelta
+        }
+        if(buttons[downKey] && player1.y + player1.height < canvas.height) {
+          player1.y += player1.yDelta
+        }
+        for (var i = gameData.tshnaminer.length-1; i >= 0; i--) {
+        if(Intersection(player1.x, player1.y, player1.width, player1.height, gameData.tshnaminer[i].x, gameData.tshnaminer[i].y, gameData.tshnaminer[i].width, gameData.tshnaminer[i].height)){
+          gameData.lives --
+          gameData.burger.x = rand(canvas.width-20);
+          gameData.burger.y = 50;
+          gameData.player1.x = canvas.width/2;
+          gameData.player1.y = canvas.height-120;
+        }}
+
+        for (var i = gameData.tshnaminer1.length-1; i >= 0; i--) {
+        if(Intersection(player1.x, player1.y, player1.width, player1.height, gameData.tshnaminer1[i].x, gameData.tshnaminer1[i].y, gameData.tshnaminer1[i].width, gameData.tshnaminer1[i].height)){
+        gameData.lives --
+        gameData.burger.x = rand(canvas.width-20);
+        gameData.burger.y = 50;
+        gameData.player1.x = canvas.width/2;
+        gameData.player1.y = canvas.height-120;
+        }}
+
+        for(let i = 0; i < gameData.tshnaminer.length; i++) {
+        gameData.tshnaminer[i].x += 8;
+        }
+        for(let i = 0; i < gameData.tshnaminer.length; i++) {
+        if (gameData.tshnaminer[i].x >= gameData.tshnaminer[i].width + canvas.width){
+          gameData.tshnaminer[i].x = 0;
+        }
+        }
+
+        for(let i = 0; i < gameData.tshnaminer1.length; i++) {
+        gameData.tshnaminer1[i].x += -8;
+        }
+        for(let i = 0; i < gameData.tshnaminer1.length; i++) {
+        if (gameData.tshnaminer1[i].x <= 0){
+          gameData.tshnaminer1[i].x = canvas.width ;
+        }
+        }
+        const burger = gameData.burger;
+        if(Intersection(burger.x, burger.y, burger.width, burger.height, gameData.player1.x, gameData.player1.y, gameData.player1.width, gameData.player1.height)){
+        burger.x = rand(canvas.width-20);
+        burger.y = 50;
+        gameData.player1.x = canvas.width/2;
+        gameData.player1.y = canvas.height-120;
+        gameData.passed++
+
+      }
+
+
+      if(gameData.passed === 6){
+        gameData.gameOver = true;
+        ctx.drawImage(winimg, 0, 0, canvas.width, canvas.height)
+      }
+
+      if(gameData.lives === 0){
+        gameData.gameOver = true;
+        ctx.drawImage(verjimg, 0, 0, canvas.width, canvas.height)
+      }
+      }
+
+
+
+      const draw = function (){
+
+        ctx.drawImage(backgroundimg, 0, 0, canvas.width, canvas.height);
+
+        const player1 = gameData.player1;
+        ctx.drawImage(player1img, player1.x, player1.y, player1.width, player1.height);
+
+        const burger = gameData.burger;
+        ctx.drawImage(burgerimg, burger.x, burger.y, burger.width, burger.height);
+
+        for (let i = 0; i < gameData.tshnaminer.length; i++) {
+          ctx.drawImage(tshnamiimg, gameData.tshnaminer[i].x, gameData.tshnaminer[i].y, gameData.tshnaminer[i].width, gameData.tshnaminer[i].height);
+        }
+
+        for (let i = 0; i < gameData.tshnaminer1.length; i++) {
+          ctx.drawImage(tshnami1img, gameData.tshnaminer1[i].x, gameData.tshnaminer1[i].y, gameData.tshnaminer1[i].width, gameData.tshnaminer1[i].height);
+        }
+
+        ctx.font="35px Times New Roman";
+				ctx.fillStyle="white";
+        const bar = "Lives:";
+        ctx.fillText(bar, 30,35);
+        ctx.fillText(gameData.lives, 125,35)
+        const pass = "Passed:";
+        ctx.fillText(pass, 200, 35);
+        ctx.fillText(gameData.passed, 320, 35)
+
+      };
+
+
+
+      const upKey = 38;
+      const downKey = 40;
+      const leftKey=37;
+      const rightKey=39;
+      const buttons = {};
+
+      document.addEventListener('keydown', function(event) {
+		buttons[event.keyCode] = true;
+      },false);
+
+      document.addEventListener('keyup', function(event) {
+		buttons[event.keyCode] = false;
+      },false);
+
+      const loop = function(){
+
+        draw();
+        updateData();
+        if(!gameData.gameOver) {
+          requestAnimationFrame(loop);
+        }
+      };
+      loop();
+    </script>
+  </body>
+</html>

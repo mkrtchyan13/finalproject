@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pong</title>
+  </head>
+  <body>
+    <canvas id="canvas" width=1400 height=800></canvas>
+    <script type="text/javascript">
+
+			const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const backgroundimg = new Image();
+      backgroundimg.src = "https://i.imgur.com/EzRbxht.jpg";
+      const pongimg = new Image();
+      pongimg.src = "http://www.itusozluk.com/img.php/93f4a2414f3b444b517e8e84d7396ff110957/quaffle";
+      const playerimg = new Image();
+      playerimg.src = "https://scontent.fevn1-1.fna.fbcdn.net/v/t34.0-0/p280x280/25188455_945770305576943_1228331075_n.png?oh=6c95ba41805fdf81b99c6290913aacfa&oe=5A2F3458";
+
+
+
+      const gameData = {
+        player1: {
+          x: 0,
+          y: (canvas.height/2)-70,
+          width: 160,
+          height: 190,
+          yDelta: 10
+        },
+
+        player2: {
+          x: canvas.width-135,
+          y: (canvas.height/2)-70,
+          width: 160,
+          height: 190,
+          yDelta: 5
+        },
+
+        ball: {
+          x: 600,
+          y: 350,
+          width: 60,
+          height: 60,
+          xDelta: 5,
+          yDelta: 5
+        },
+
+				miavor1: 0,
+				miavor2: 0
+
+      };
+
+
+
+			const Intersection = function(rect1X, rect1Y, rect1W, rect1H, rect2X, rect2Y, rect2W, rect2H) {
+	    return rect1X < rect2X + rect2W && rect1X + rect1W > rect2X && rect1Y < rect2Y + rect2H && rect1H + rect1Y > rect2Y;
+	    };
+      const updateData = function(){
+        const player1 = gameData.player1;
+        const player2 = gameData.player2;
+        const ball = gameData.ball;
+
+
+        if (ball.y + ball.height >= canvas.height || ball.y <= 0){
+          ball.yDelta = -ball.yDelta;
+        }
+        ball.x +=  ball.xDelta;
+        ball.y +=  ball.yDelta;
+
+        if(buttons[upKey] && player2.y > 0) {
+          player2.y -= player2.yDelta
+        }
+        if(buttons[downKey] && player2.y + player2.height < canvas.height) {
+          player2.y += player2.yDelta
+        }
+        if(buttons[w] && player1.y > 0) {
+          player1.y -= player1.yDelta
+        }
+        if(buttons[s] && player1.y + player1.height < canvas.height) {
+          player1.y += player1.yDelta
+        }
+				if(Intersection(ball.x, ball.y, ball.width, ball.height, gameData.player2.x, gameData.player2.y, gameData.player2.width, gameData.player2.height)){
+		      ball.xDelta = -ball.xDelta;
+					ball.yDelta = ball.yDelta;
+				}
+				if(Intersection(ball.x, ball.y, ball.width, ball.height, gameData.player1.x, gameData.player1.y, gameData.player1.width, gameData.player1.height)){
+			      ball.xDelta = -ball.xDelta;
+						ball.yDelta = ball.yDelta;
+			}
+
+				if(ball.x <=0 ){
+					ball.x = 600;
+					ball.y = 350;
+					gameData.miavor2++
+				}
+
+				if(ball.x >= canvas.width){
+					ball.x = 600;
+					ball.y = 350;
+					gameData.miavor1++
+				}
+      }
+
+
+      const draw = function (){
+
+        ctx.drawImage(backgroundimg, 0, 0, canvas.width, canvas.height);
+
+        const player1 = gameData.player1;
+        ctx.drawImage(playerimg, player1.x, player1.y, player1.width, player1.height);
+
+        const player2 = gameData.player2;
+        ctx.drawImage(playerimg, player2.x, player2.y, player2.width, player2.height);
+
+        const ball = gameData.ball;
+        ctx.drawImage(pongimg, ball.x, ball.y, ball.width, ball.height);
+
+				ctx.font="70px Times New Roman";
+				ctx.fillStyle="black";
+				ctx.fillText(gameData.miavor1, (canvas.width/2)-80,75);
+				const gcik = "-";
+				ctx.fillText(gcik,(canvas.width/2)-10,75 )
+				ctx.fillText(gameData.miavor2, (canvas.width/2)+40,75);
+      };
+
+
+      const upKey = 38;
+      const downKey = 40;
+      const w = 87;
+      const s = 83;
+      const buttons = {};
+
+      document.addEventListener('keydown', function(event) {
+		buttons[event.keyCode] = true;
+      },false);
+
+      document.addEventListener('keyup', function(event) {
+		buttons[event.keyCode] = false;
+      },false);
+
+      const loop = function(){
+
+        draw();
+        updateData();
+        requestAnimationFrame(loop);
+
+      };
+
+      loop();
+    </script>
+  </body>
+</html>
